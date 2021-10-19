@@ -10,4 +10,7 @@ build:
 exec:
 	./bin/golang-todo-app
 
+mkbin:
+	mkdir bin
+
 startapp: build exec
