@@ -4,33 +4,41 @@ import (
 	"fmt"
 	entity "github.com/alifudin-a/golang-todo-app/pkg/domain/entity/todo"
 	"github.com/alifudin-a/golang-todo-app/pkg/domain/helper"
-	repository "github.com/alifudin-a/golang-todo-app/pkg/repository/todo"
 	service "github.com/alifudin-a/golang-todo-app/pkg/service/todo"
 	"github.com/labstack/echo/v4"
+	builder "github.com/alifudin-a/golang-todo-app/pkg/domain/builder/todo"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
 type login struct{}
 
+// NewLoginHandler : login handler
 func NewLoginHandler() *login{
 	return &login{}
 }
 
-func (*login) LoginHandler(c echo.Context) (err error){
+func (*login) validate (req *entity.User, c echo.Context) (err error){
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+
+	return c.Validate(req)
+}
+
+func (l *login) LoginHandler(c echo.Context) (err error){
 	var resp helper.Response
 	var user *entity.User
 	var req = new(entity.User)
 
-	if err = c.Bind(req); err != nil {
+	err = l.validate(req, c)
+	if err != nil {
 		return err
 	}
 
 	srvc := service.NewTodoRepository()
 
-	arg := repository.LoginParam{
-		Username: req.Username,
-	}
+	arg := builder.LoginBuilder(req)
 
 	user, err = srvc.Login(arg)
 	if err != nil {

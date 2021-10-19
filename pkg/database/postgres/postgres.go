@@ -10,8 +10,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// DB : Global variable for sqlx.DB wrapper
 var DB *sqlx.DB
 
+// OpenDB : Open database connection
 func OpenDB(){
 	var (
 		dbhost = os.Getenv("DB_HOST")
